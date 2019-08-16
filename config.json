@@ -1,0 +1,13 @@
+{
+  "thingName": "<THING-NAME>",
+  "thingArn": "<THING-ARN>",
+  "region": "<REGION>",
+  "deviceCertificatePath": "",
+  "privateKeyPath": "",
+  "rootCaPath": "",
+  "endpoint": "<ENDPOINT>",
+  "credentialsEndpoint": "<CREDENTIAL-ENDPOINT-PREFIX>",
+  "roleAlias": "<ROLE-ALIAS>",
+  "useWebsocket": "false",
+  "port": 8883
+}
