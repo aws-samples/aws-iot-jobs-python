@@ -1,0 +1,8 @@
+{
+    "operation": "pip-uninstall",
+    "packages": [
+        {
+            "name": "crhelper"
+        }
+    ]
+}

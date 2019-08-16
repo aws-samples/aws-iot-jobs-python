@@ -1,0 +1,8 @@
+{
+    "operation": "uninstall-packages",
+    "packages": [
+        {
+            "name": "parquet-tools"
+        }
+    ]
+}

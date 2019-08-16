@@ -1,0 +1,9 @@
+{
+	"operation":"download-files",
+	"files": [
+		{
+			"destination": "./app-files",
+			"url": "https://s3.amazonaws.com/pubz/cvm.yml"
+		}
+	]
+}

@@ -1,0 +1,6 @@
+{
+    "operation": "stop-containers",
+    "containers": [
+        "97a13d5571"
+    ]
+}

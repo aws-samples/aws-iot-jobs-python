@@ -1,0 +1,9 @@
+{
+    "operation": "pull-container-images",
+    "images": [
+        {
+            "url": "bfirsh/reticulate-splines",
+            "version": "latest"
+        }
+    ]
+}

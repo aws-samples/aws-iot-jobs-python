@@ -1,0 +1,10 @@
+{
+    "operation": "container-logs",
+    "containers": [
+        {
+            "id": "645a80b2d4d0",
+            "bucket": "jonslo-device-jobs",
+            "prefix": "logs/"
+        }
+    ]
+}

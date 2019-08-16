@@ -1,0 +1,8 @@
+{
+    "operation": "run-commands",
+    "commands": [
+        ["ls", "-al"],
+        ["pwd"],
+        ["whoami"]
+    ]
+}

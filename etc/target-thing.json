@@ -1,0 +1,5 @@
+{
+    "targets": [
+        "arn:aws:iot:<REGION>:<ACCOUNT_ID>:thing/<THING_NAME>"
+    ]
+}

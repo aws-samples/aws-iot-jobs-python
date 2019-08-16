@@ -1,0 +1,9 @@
+{
+    "operation": "start-containers",
+    "images": [
+        {
+            "name": "bfirsh/reticulate-splines",
+            "version": "latest"
+        }
+    ]
+}

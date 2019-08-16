@@ -1,0 +1,8 @@
+{
+	"operation":"rollback-files",
+	"files": [
+		{
+			"destination": "./app-files/cvm.yml"
+		}
+	]
+}

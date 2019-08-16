@@ -1,0 +1,9 @@
+{
+    "operation": "pip-install",
+    "packages": [
+        {
+            "name": "crhelper",
+            "version": "latest"
+        }
+    ]
+}

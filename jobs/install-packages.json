@@ -1,0 +1,9 @@
+{
+    "operation": "install-packages",
+    "packages": [
+        {
+            "name": "jq",
+            "version": "latest"
+        }
+    ]
+}
