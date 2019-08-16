@@ -109,7 +109,7 @@ venv.bak/
 *.crt
 
 # Other
-# config.json
+config.json
 deploy.sh
 c9-user-data.sh
 c9_bootstrap_lambda/
