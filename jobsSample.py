@@ -76,24 +76,6 @@ class JobsMessageProcessor(object):
             result = self.executeJob(execution)
             result['HandledBy'] = 'ClientToken: {}'.format(self.clientToken)
 
-            print(result)
-
-            # if hasattr(result, 'stdout') and result.stdout != None:
-            #     stdout = result.stdout.decode('utf-8')
-            #     if stdout != '':
-            #         statusDetails['stdout'] = stdout
-
-            # if hasattr(result, 'stderr') and result.stderr != None:
-            #     stderr = result.stderr.decode('utf-8')
-            #     if stderr != '':
-            #         statusDetails['stderr'] = stderr
-
-            # if hasattr(result, 'args'):
-            #     statusDetails['args'] = result.args
-
-            # if hasattr(result, 'returncode'):
-            #     statusDetails['returncode'] = result.returncode
-
             if result['didSucceed'] == True:
 
                 threading.Thread(target=self.awsIoTMQTTThingJobsClient.sendJobsUpdate, kwargs={
@@ -276,7 +258,7 @@ if not config.useWebsocket and not config.port:
 
 # Configure logging
 logger = logging.getLogger("AWSIoTPythonSDK.core")
-logger.setLevel(logging.DEBUG)
+logger.setLevel(logging.INFO)
 streamHandler = logging.StreamHandler()
 formatter = logging.Formatter(
     '%(asctime)s - %(name)s - %(levelname)s - %(message)s')
@@ -333,14 +315,13 @@ print('Connecting to MQTT server and setting up callbacks...')
 jobsClient.connect()
 jobExecutor = JobExecutor(config, deviceShadowHandler)
 jobsMsgProc = JobsMessageProcessor(jobsClient, config.clientId, jobExecutor)
-print('Starting to process jobs...')
-jobsMsgProc.processJobs()
-while not jobsMsgProc.isDone():
-    time.sleep(2)
 
+print('Starting to process jobs...')
 while True:
-    time.sleep(2)
-    print('.')
+    jobsMsgProc.processJobs()
+    while not jobsMsgProc.isDone():
+        time.sleep(2)
+    time.sleep(10)
 
 print('Done processing jobs')
 print('Stats: ' + json.dumps(jobsMsgProc.getStats()))

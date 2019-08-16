@@ -321,8 +321,8 @@ class JobExecutor(object):
     def pipList(self, execution):
     
         systems = {
-            'Darwin': ["pip", "list"],
-            'Linux': ["pip", "list"]
+            'Darwin': ["pip3", "list"],
+            'Linux': ["pip3", "list"]
         }
 
         # Get the function from switcher dictionary
@@ -349,23 +349,19 @@ class JobExecutor(object):
                 
                 pkgSplit = pkg.decode().split()
                 p = {"name": pkgSplit[0], "version": pkgSplit[1]}
-                pkgJson = json.dumps(p)
-                print(pkgJson)
 
                 packageList.append(p)
 
             JSONPayload = '{"state":{"reported":{"packages":' + json.dumps(packageList) + '}}}'
             self.deviceShadowHandler.shadowUpdate(JSONPayload, customShadowCallback_Update, 5)
 
-            results.append(json.dumps(packageList))
-
             return self.formatResults(results, didSucceed)
                 
     def pipInstall(self, execution):
 
         systems = {
-            'Darwin': ["pip", "install", "--user"],
-            'Linux': ["pip", "install", "--user"]
+            'Darwin': ["pip3", "install", "--user"],
+            'Linux': ["pip3", "install", "--user"]
         }
     
         results = []
@@ -392,8 +388,8 @@ class JobExecutor(object):
     def pipUninstall(self, execution):
 
         systems = {
-            'Darwin': ["pip", "uninstall", "-y"],
-            'Linux': ["pip", "uninstall", "-y"]
+            'Darwin': ["pip3", "uninstall", "-y"],
+            'Linux': ["pip3", "uninstall", "-y"]
         }
     
         results = []
