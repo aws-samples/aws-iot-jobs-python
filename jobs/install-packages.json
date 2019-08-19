@@ -2,7 +2,7 @@
     "operation": "install-packages",
     "packages": [
         {
-            "name": "jq",
+            "name": "wireshark",
             "version": "latest"
         }
     ]

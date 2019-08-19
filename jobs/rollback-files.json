@@ -2,7 +2,8 @@
 	"operation":"rollback-files",
 	"files": [
 		{
-			"destination": "./app-files/cvm.yml"
+			"destination": "./app-files/cvm.yml",
+			"required": true
 		}
 	]
 }

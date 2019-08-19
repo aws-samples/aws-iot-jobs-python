@@ -7,7 +7,8 @@
   "rootCaPath": "",
   "endpoint": "<ENDPOINT>",
   "credentialsEndpoint": "<CREDENTIAL-ENDPOINT-PREFIX>",
-  "roleAlias": "<ROLE-ALIAS>",
+  "roleAlias": "aws-iot-jobs-python",
   "useWebsocket": "false",
-  "port": 8883
+  "port": 8883,
+  "s3Bucket": "<BUCKET-NAME>"
 }

@@ -75,7 +75,7 @@ class JobExecutor(object):
             if exists:
                 os.rename(fileOperation['destination'], fileOperation['destination'] + '.old')
 
-            results.append(subprocess.run(["curl", "--output", fileOperation['destination'], fileOperation['url']], shell=True, check=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE))
+            results.append(subprocess.run(["curl", "--output", fileOperation['destination'], fileOperation['url']], shell=False, check=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE))
 
         return self.formatResults(results, didSucceed)
 

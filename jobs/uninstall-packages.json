@@ -2,7 +2,7 @@
     "operation": "uninstall-packages",
     "packages": [
         {
-            "name": "parquet-tools"
+            "name": "wireshark"
         }
     ]
 }
