@@ -1,13 +1,12 @@
 {
-    "operation": "upload-files",
-    "sources": [
-        {
-            "bucket": "BUCKET_NAME",
-            "directory": "DIRECTORY",
-            "filename": "FILENAME",
-            "prefix": "PREFIX",
-            "path": "PATH",
-            "patternMatch": false
-        }
-    ]
+  "operation": "upload-files",
+  "sources": [
+    {
+      "bucket": "BUCKET",
+      "directory": "DIRECTORY",
+      "filename": "AmazonRootCA1.pem",
+      "prefix": "upload",
+      "patternMatch": false
+    }
+  ]
 }

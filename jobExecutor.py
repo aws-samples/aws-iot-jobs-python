@@ -252,7 +252,7 @@ class JobExecutor(object):
                     else:
                         key = filename
 
-                    s3_client.upload_file(source['path'], source['bucket'], key)
+                    s3_client.upload_file(filePath, source['bucket'], key)
 
                     successMessage = 'Uploaded ' + filePath + ' to ' + target
                     results.append(successMessage)

@@ -10,5 +10,5 @@
   "roleAlias": "aws-iot-jobs-python",
   "useWebsocket": "false",
   "port": 8883,
-  "s3Bucket": "<BUCKET-NAME>"
+  "s3Bucket": "wow"
 }
