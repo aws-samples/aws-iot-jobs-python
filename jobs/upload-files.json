@@ -3,10 +3,8 @@
   "sources": [
     {
       "bucket": "BUCKET",
-      "directory": "DIRECTORY",
       "filename": "AmazonRootCA1.pem",
-      "prefix": "upload",
-      "patternMatch": false
+      "prefix": "upload"
     }
   ]
 }

@@ -191,7 +191,7 @@ class JobExecutor(object):
         else:
             # Execute the function
             print('reboot!')
-            result = subprocess.run(cmd, shell=False, check=False, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+            results.append(subprocess.run(commands, shell=False, check=False, stdout=subprocess.PIPE, stderr=subprocess.PIPE))
             return self.formatResults(results, didSucceed)
 
     def runCommands(self, execution):
@@ -223,52 +223,19 @@ class JobExecutor(object):
             filePath = None
             key = None
 
-            try:
+            filePath = source['filename']
 
-                if stringToBool(source['patternMatch']):
+            if 'prefix' in source:
+                key = source['prefix'] + '/' + filePath
+            else:
+                key = filePath
 
-                    for filename in os.listdir(source['directory']):
+            s3_client.upload_file(filePath, source['bucket'], key)
 
-                        if fnmatch.fnmatch(filename, source['filePattern']):
+            successMessage = 'Uploaded ' + filePath + ' to ' + source['bucket']
+            results.append(successMessage)
 
-                            filePath = source['directory'] + '/' + filename
-
-                            if 'prefix' in source:
-                                key = source['prefix'] + '/' + filename
-                            else:
-                                key = filename
-
-                            s3_client.upload_file(filePath, source['bucket'], filename)
-
-                            successMessage = 'Uploaded ' + filePath + ' to ' + target
-                            results.append(successMessage)
-
-                else:
-
-                    filePath = source['filename']
-
-                    if 'prefix' in source:
-                        key = source['prefix'] + '/' + source['filename']
-                    else:
-                        key = filename
-
-                    s3_client.upload_file(filePath, source['bucket'], key)
-
-                    successMessage = 'Uploaded ' + filePath + ' to ' + target
-                    results.append(successMessage)
-
-            except:
-                target = source['bucket']
-
-                if 'prefix' in source:
-                    target += '/' + source['prefix']
-
-                errorMessage = 'Error uploading ' + filePath + ' to ' + target
-                results.append(errorMessage)
-
-                didSucceed = False
-
-            return self.formatResults(results, didSucceed)
+        return self.formatResults(results, didSucceed)
 
 # PACKAGE MANAGER
 
