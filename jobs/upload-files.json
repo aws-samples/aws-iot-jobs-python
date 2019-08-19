@@ -1,3 +1,13 @@
 {
-    "operation": "upload-files"
+    "operation": "upload-files",
+    "sources": [
+        {
+            "bucket": "BUCKET_NAME",
+            "directory": "DIRECTORY",
+            "filename": "FILENAME",
+            "prefix": "PREFIX",
+            "path": "PATH",
+            "patternMatch": false
+        }
+    ]
 }

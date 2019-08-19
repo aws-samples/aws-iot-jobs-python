@@ -176,6 +176,9 @@ class JobExecutor(object):
 
     def reboot(self, execution):
 
+        results = []
+        didSucceed = True
+
         systems = {
             'Darwin': ["sudo", "shutdown", "-r", "+1"],
             'Linux': ["sudo", "shutdown", "-r", "+1"]
@@ -188,8 +191,8 @@ class JobExecutor(object):
         else:
             # Execute the function
             print('reboot!')
-            subprocess.Popen(commands)
-            return subprocess.CompletedProcess(args=[],returncode=0)
+            result = subprocess.run(cmd, shell=False, check=False, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+            return self.formatResults(results, didSucceed)
 
     def runCommands(self, execution):
 
@@ -207,6 +210,9 @@ class JobExecutor(object):
         return self.formatResults(results, didSucceed)
 
     def uploadS3Files(self, execution):
+
+        results = []
+        didSucceed = True
 
         session = self.getTemporaryCredentials()
 
@@ -234,6 +240,9 @@ class JobExecutor(object):
 
                             s3_client.upload_file(filePath, source['bucket'], filename)
 
+                            successMessage = 'Uploaded ' + filePath + ' to ' + target
+                            results.append(successMessage)
+
                 else:
 
                     filePath = source['filename']
@@ -245,6 +254,9 @@ class JobExecutor(object):
 
                     s3_client.upload_file(source['path'], source['bucket'], key)
 
+                    successMessage = 'Uploaded ' + filePath + ' to ' + target
+                    results.append(successMessage)
+
             except:
                 target = source['bucket']
 
@@ -252,9 +264,11 @@ class JobExecutor(object):
                     target += '/' + source['prefix']
 
                 errorMessage = 'Error uploading ' + filePath + ' to ' + target
-                return subprocess.CompletedProcess(args=[],returncode=1,stderr=errorMessage.encode('ascii'))
+                results.append(errorMessage)
 
-        return subprocess.CompletedProcess(args=[],returncode=0)
+                didSucceed = False
+
+            return self.formatResults(results, didSucceed)
 
 # PACKAGE MANAGER
 
@@ -440,6 +454,9 @@ class JobExecutor(object):
 
     def pullContainerImages(self, execution):
 
+        results = []
+        didSucceed = True
+
         session = self.getTemporaryCredentials()
 
         ecr_client = session.client('ecr')
@@ -450,19 +467,21 @@ class JobExecutor(object):
 
         tokenString = base64.b64decode(token).decode().split(':')[1]
 
-        result = subprocess.run(["docker","login","-u","AWS","-p",tokenString,"661133080262.dkr.ecr.us-east-1.amazonaws.com"], capture_output=True)
+        result = subprocess.run(["docker","login","-u","AWS","-p",tokenString,"661133080262.dkr.ecr.us-east-1.amazonaws.com"], shell=False, check=False, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+        results.append(result)
 
-        if result.returncode != 0:
-            return result
+        if result.stderr and result.stderr is not None:
+            didSucceed = False
 
         for image in execution['jobDocument']['images']:
 
-            result = subprocess.run(["docker","pull",image['url'] + ':' + image['version']], capture_output=True)
+            result = subprocess.run(["docker","pull",image['url'] + ':' + image['version']], shell=False, check=False, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+            results.append(result)
 
-            if result.returncode != 0:
-                return result
+            if result.stderr and result.stderr is not None:
+                didSucceed = False
 
-        return result
+        return self.formatResults(containerList, didSucceed)
 
     def runContainers(self, execution):
 
