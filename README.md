@@ -231,6 +231,16 @@ aws iot describe-job-execution --job-id $JOB_ID --thing-name $(cat config.json |
 
 ![](docs/img/describeJobExecution.png)
 
+After executing the pip-list job, notice that the device's shadow has been updated in AWS Management Console:
+
+![](docs/img/shadow.png)
+
+Or via CLI:
+
+```
+aws aws iot-data get-thing-shadow --thing-name $(cat config.json | jq -r '.thingName') shadow.txt
+cat shadow.txt
+```
 
 ## Clean up
 
