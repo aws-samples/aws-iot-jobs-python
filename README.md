@@ -46,10 +46,9 @@ Click the Cloud9 IDE link:
   * [awscli](https://aws.amazon.com/cli/)
   * [jq](https://stedolan.github.io/jq/)
   
-  ### Setup thing, certificate, and policy ###
+  ### Setup environment ###
 
-
-  **NOTE: Make sure you execute this from the aws-iot-jobs-python directory.**
+  *NOTE: Make sure you execute this from the aws-iot-jobs-python directory.*
 
   ```
   export REGION=<enter your region>
@@ -220,7 +219,9 @@ Go to CloudFormation, and delete the 'aws-iot-jobs-python' stack.
 <details>
   <summary>Manual</summary>
 
-**NOTE: Make sure you execute this from the aws-iot-jobs-python directory. This script depends on values in config.json, which are populated from the create.sh script.**
+### Delete environment
+
+*NOTE: Make sure you execute this from the aws-iot-jobs-python directory. This script depends on values in config.json, which are populated from the create.sh script.*
 
 ```
 export REGION=<enter your region>
