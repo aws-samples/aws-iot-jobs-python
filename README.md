@@ -49,6 +49,9 @@ Click the Cloud9 IDE link:
   ### Setup thing, certificate, and policy ###
 
   ```
+  # make sure you are in aws-iot-jobs-python directory
+  cd ./aws-iot-jobs-python
+
   # assigning your region to a shell variable makes the next steps easier
   REGION=<set AWS region>
 
@@ -88,8 +91,21 @@ Click the Cloud9 IDE link:
   # get AWS IoT endpoint
   aws iot describe-endpoint --endpoint-type iot:Data-ATS
 
-  # make sure you are in aws-iot-jobs-python directory
-  cd ./aws-iot-jobs-python
+  # create a S3 Bucket for uploading
+  BUCKET=<Enter a bucket name>
+  aws s3 mb s3://$BUCKET
+
+  # create IAM policy to access bucket
+  IAM_POLICY_ARN=$(aws iam create-policy --policy-name aws-iot-jobs-python-policy --policy-document "{\"Version\":\"2012-10-17\",\"Statement\":[{\"Action\":[\"s3:*\"],\"Resource\":[\"arn:aws:s3:::$BUCKET\",\"arn:aws:s3:::$BUCKET/*\"],\"Effect\":\"Allow\"}]}" | jq -r '.Policy.Arn')
+
+  # create IAM role for device role alias
+  IAM_ROLE_ARN=$(aws iam create-role --role-name aws-iot-jobs-python-role --assume-role-policy-document "{\"Version\":\"2008-10-17\",\"Statement\":[{\"Effect\":\"Allow\",\"Principal\":{\"Service\":\"credentials.iot.amazonaws.com\"},\"Action\":\"sts:AssumeRole\"}]}" | jq -r '.Role.Arn')
+
+  # attach IAM role policy
+  aws iam attach-role-policy --role-name aws-iot-jobs-python-role --policy-arn $IAM_POLICY_ARN
+
+  # create role alias
+  aws iot create-role-alias --role-alias aws-iot-jobs-python --role-arn $IAM_ROLE_ARN
 
   # setup config.json with jq (you may need to adjust depending on where you stored your certificate/keys)
   cat config.json | jq --arg region "$REGION" --arg thing_arn "$IOT_THING_ARN" --arg endpoint "$IOT_ENDPOINT" --arg endpoint_cp "$IOT_ENDPOINT_CP" '.endpoint = $endpoint | .thingArn = $thing_arn | .credentialsEndpoint = $endpoint_cp | .region = $region | .thingName = "test-job-device" | .rootCaPath = "./AmazonRootCA1.pem" | .deviceCertificatePath = "../test-job-device.certificate.pem" | .privateKeyPath = "../test-job-device.private.key"' > config.tmp.json && mv config.tmp.json config.json
@@ -113,7 +129,7 @@ python3 jobsSample.py -j ./config.json
 ```
 {
     "thingName": "<THING-NAME>",
-    "thingArn": "<THING-NAME>",
+    "thingArn": "<THING-ARN>",
     "region": "<REGION>",
     "deviceCertificatePath": "",
     "privateKeyPath": "",
@@ -122,7 +138,8 @@ python3 jobsSample.py -j ./config.json
     "credentialsEndpoint": "<CREDENTIAL-ENDPOINT-PREFIX>",
     "roleAlias": "<ROLE-ALIAS>",
     "useWebsocket": "false",
-    "port": 8883
+    "port": 8883,
+    "s3Bucket": "<BUCKET-NAME>
 }
 ```
 
@@ -139,6 +156,7 @@ python3 jobsSample.py -j ./config.json
 | roleAlias | used to retrieve temporary credentials with credentials endpoint |
 | useWebsocket | determines if WS should be used |
 | port | MQTT port |
+| s3Bucket | used for uploading files |
 
 </details>
 
