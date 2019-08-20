@@ -1,4 +1,4 @@
-echo cleaning up in $REGION
+echo creating up in $REGION
 echo using bucket $S3_BUCKET
 
 # save IoT endpoints to variables
