@@ -231,3 +231,9 @@ aws iot describe-job-execution --job-id $JOB_ID --thing-name $(cat config.json |
 
 ![](docs/img/describeJobExecution.png)
 
+
+## Clean up
+
+Go to CloudFormation, and delete the 'aws-iot-jobs-python' stack.
+
+![](docs/img/cleanUp.png)
