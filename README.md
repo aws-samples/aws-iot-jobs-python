@@ -178,18 +178,19 @@ You can use the [JSON job documents](jobs/) to schedule a new job execution. You
 #### Basic
 * [download-files.json](docs/download-files.md)
 * [install-packages.json](docs/install-packages.md)
-* [uninstall-packages.json](docs/uninstall-packages.md)
+* [pip-install.json](docs/pip-install.md)
+* [pip-list.json](docs/pip-list.md)
+* [pip-uninstall.json](docs/pip-uninstall.md)
 * [rollback-files.json](docs/rollback-files.md)
 * [run-commands.json](docs/run-commands.md)
-* [list-packages.json](docs/list-packages.md)
+* [uninstall-packages.json](docs/uninstall-packages.md)
 #### Advanced
-* container-logs.json
+* [container-logs.json](docs/container-logs.md)
 * [list-containers.json](docs/list-containers.md)
-* pull-images.json
-* reboot.json
+* [reboot.json](docs/reboot.md)
 * [start-containers.json](docs/start-containers.md)
 * [stop-containers.json](docs/stop-containers.md)
-* upload-files.json
+* [upload-files.json](docs/upload-files.md)
   
 </details>
 

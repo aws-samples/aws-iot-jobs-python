@@ -448,7 +448,7 @@ class JobExecutor(object):
             if result.stderr and result.stderr is not None:
                 didSucceed = False
 
-        return self.formatResults(containerList, didSucceed)
+        return self.formatResults(results, didSucceed)
 
     def runContainers(self, execution):
 

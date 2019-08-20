@@ -2,7 +2,9 @@
     "operation": "pull-container-images",
     "images": [
         {
-            "url": "bfirsh/reticulate-splines",
+            "region": "<ECR-REGION>",
+            "accountNumber": "<ACCOUNT-NUMBER>",
+            "image": "bfirsh/reticulate-splines",
             "version": "latest"
         }
     ]
