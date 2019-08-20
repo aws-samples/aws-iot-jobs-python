@@ -238,7 +238,7 @@ After executing the pip-list job, notice that the device's shadow has been updat
 Or via CLI:
 
 ```
-aws aws iot-data get-thing-shadow --thing-name $(cat config.json | jq -r '.thingName') shadow.txt
+aws iot-data get-thing-shadow --thing-name $(cat config.json | jq -r '.thingName') shadow.txt
 cat shadow.txt
 ```
 
