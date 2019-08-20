@@ -48,67 +48,13 @@ Click the Cloud9 IDE link:
   
   ### Setup thing, certificate, and policy ###
 
+
+  **NOTE: Make sure you execute this from the aws-iot-jobs-python directory.**
+
   ```
-  # make sure you are in aws-iot-jobs-python directory
-  cd ./aws-iot-jobs-python
-
-  # assigning your region to a shell variable makes the next steps easier
-  REGION=<set AWS region>
-
-  # save IoT endpoints to variables
-  IOT_ENDPOINT=$(aws iot describe-endpoint --region $REGION --endpoint-type iot:Data-ATS | jq -r '.endpointAddress')
-  IOT_ENDPOINT_CP=$(aws iot describe-endpoint --region $REGION --endpoint-type iot:CredentialProvider | jq -r '.endpointAddress')
-
-  # assigning your thing name to a shell variable makes the next steps easier
-  THING_NAME=test-job-device
-  
-  # create a thing in the thing registry
-  aws iot create-thing --thing-name $THING_NAME --region $REGION
-  IOT_THING_ARN=$(aws iot describe-thing --region $REGION --thing-name $THING_NAME | jq -r '.thingArn')
-
-  # create key and certificate for your device and active the device
-  aws iot create-keys-and-certificate --region $REGION --set-as-active --public-key-outfile $THING_NAME.public.key --private-key-outfile $THING_NAME.private.key --certificate-pem-outfile $THING_NAME.certificate.pem > /tmp/create_cert_and_keys_response
-
-  # look at the output from the previous command
-  cat /tmp/create_cert_and_keys_response
-
-  # output values from the previous call needed in further steps
-  CERTIFICATE_ARN=$(jq -r ".certificateArn" /tmp/create_cert_and_keys_response)
-  CERTIFICATE_ID=$(jq -r ".certificateId" /tmp/create_cert_and_keys_response)
-  echo $CERTIFICATE_ARN
-  echo $CERTIFICATE_ID
-
-  # create an IoT policy
-  POLICY_NAME=${THING_NAME}_Policy
-  aws iot create-policy --region $REGION --policy-name $POLICY_NAME --policy-document '{"Version":"2012-10-17","Statement":[{"Effect":"Allow","Action": "iot:*","Resource":"*"}]}'
-
-  # attach the policy to your certificate
-  aws iot attach-policy --policy-name $POLICY_NAME --target $CERTIFICATE_ARN --region $REGION
-
-  # attach the certificate to your thing
-  aws iot attach-thing-principal --thing-name $THING_NAME --principal $CERTIFICATE_ARN --region $REGION
-
-  # get AWS IoT endpoint
-  aws iot describe-endpoint --endpoint-type iot:Data-ATS
-
-  # create a S3 Bucket for uploading
-  BUCKET=<Enter a bucket name>
-  aws s3 mb s3://$BUCKET
-
-  # create IAM policy to access bucket
-  IAM_POLICY_ARN=$(aws iam create-policy --policy-name aws-iot-jobs-python-policy --policy-document "{\"Version\":\"2012-10-17\",\"Statement\":[{\"Action\":[\"s3:*\"],\"Resource\":[\"arn:aws:s3:::$BUCKET\",\"arn:aws:s3:::$BUCKET/*\"],\"Effect\":\"Allow\"}]}" | jq -r '.Policy.Arn')
-
-  # create IAM role for device role alias
-  IAM_ROLE_ARN=$(aws iam create-role --role-name aws-iot-jobs-python-role --assume-role-policy-document "{\"Version\":\"2008-10-17\",\"Statement\":[{\"Effect\":\"Allow\",\"Principal\":{\"Service\":\"credentials.iot.amazonaws.com\"},\"Action\":\"sts:AssumeRole\"}]}" | jq -r '.Role.Arn')
-
-  # attach IAM role policy
-  aws iam attach-role-policy --role-name aws-iot-jobs-python-role --policy-arn $IAM_POLICY_ARN
-
-  # create role alias
-  aws iot create-role-alias --role-alias aws-iot-jobs-python --role-arn $IAM_ROLE_ARN
-
-  # setup config.json with jq (you may need to adjust depending on where you stored your certificate/keys)
-  cat config.json | jq --arg region "$REGION" --arg thing_arn "$IOT_THING_ARN" --arg endpoint "$IOT_ENDPOINT" --arg endpoint_cp "$IOT_ENDPOINT_CP" '.endpoint = $endpoint | .thingArn = $thing_arn | .credentialsEndpoint = $endpoint_cp | .region = $region | .thingName = "test-job-device" | .rootCaPath = "./AmazonRootCA1.pem" | .deviceCertificatePath = "../test-job-device.certificate.pem" | .privateKeyPath = "../test-job-device.private.key"' > config.tmp.json && mv config.tmp.json config.json
+  export REGION=<enter your region>
+  export S3_BUCKET=<enter your bucket name>
+  ./bin/create.sh
   ```
 
 </details>
@@ -262,6 +208,23 @@ cat shadow.txt
 
 ## Clean up
 
+<details>
+  <summary>Cloud9 IDE</summary>
+
 Go to CloudFormation, and delete the 'aws-iot-jobs-python' stack.
 
 ![](docs/img/cleanUp.png)
+
+</details>
+
+<details>
+  <summary>Manual</summary>
+
+**NOTE: Make sure you execute this from the aws-iot-jobs-python directory. This script depends on values in config.json, which are populated from the create.sh script.**
+
+```
+export REGION=<enter your region>
+./bin/delete.sh
+```
+
+</details>
