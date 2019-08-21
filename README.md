@@ -23,7 +23,7 @@ This sample code is made available under the MIT-0 license. See the LICENSE file
 
 ### Download zip and template
 
-* ![Download Lambda zip package](https://github.com/aws-samples/aws-iot-jobs-python/raw/master/c9_bootstrap_lambda/c9_bootstrap_lambda.zip)
+* [Download Lambda zip package](https://github.com/aws-samples/aws-iot-jobs-python/raw/master/c9_bootstrap_lambda/c9_bootstrap_lambda.zip)
 * <a href="https://raw.githubusercontent.com/aws-samples/aws-iot-jobs-python/master/aws-iot-jobs-python.yaml" download>Download CloudFormation template</a>
 
 ### Configure and launch stack
