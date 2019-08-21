@@ -111,6 +111,6 @@ venv.bak/
 # Other
 config.json
 deploy.sh
-c9_bootstrap_lambda/
+c9_bootstrap_lambda/package/
 aws-iot-jobs-python.yaml
 .editorconfig

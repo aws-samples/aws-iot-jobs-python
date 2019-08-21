@@ -1,0 +1,360 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Description: AWS CloudFormation template for various IoT workshops. Creates and bootstraps
+  a Cloud9 instance.
+Parameters:
+  '01C9InstanceType':
+    Description: Cloud9 instance type
+    Type: String
+    Default: m4.large
+    AllowedValues:
+      - m4.large
+      - m4.xlarge
+      - t2.large
+    ConstraintDescription: Must be a valid Cloud9 instance type
+  'S3Bucket4Lambda':
+    Description: Name of S3 Bucket where c9_bootstrap_lambda.zip is hosted
+    Type: String
+  'S3Key4Lambda':
+    Description: S3 key for c9_bootstrap_lambda.zip
+    Type: String
+Resources:
+  VPC:
+    Type: AWS::EC2::VPC
+    Properties:
+      CidrBlock: 192.168.128.0/24
+      EnableDnsSupport: 'true'
+      EnableDnsHostnames: 'true'
+      Tags:
+        - Key: CFN Stack
+          Value: !Ref 'AWS::StackName'
+        - Key: Name
+          Value: IoT workshop 192.168.128.0/24
+  PubSubnet:
+    Type: AWS::EC2::Subnet
+    Properties:
+      VpcId: !Ref 'VPC'
+      AvailabilityZone: !Join
+        - ''
+        - - !Ref 'AWS::Region'
+          - a
+      CidrBlock: 192.168.128.0/25
+      MapPublicIpOnLaunch: 'true'
+      Tags:
+        - Key: CFN Stack
+          Value: !Ref 'AWS::StackName'
+        - Key: Name
+          Value: IoT workshop 192.168.128.0/25
+  InternetGateway:
+    Type: AWS::EC2::InternetGateway
+    Properties:
+      Tags:
+        - Key: CFN Stack
+          Value: !Ref 'AWS::StackName'
+        - Key: Name
+          Value: IoT workshop
+  GatewayToInternet:
+    Type: AWS::EC2::VPCGatewayAttachment
+    Properties:
+      VpcId: !Ref 'VPC'
+      InternetGatewayId: !Ref 'InternetGateway'
+  PublicRouteTable:
+    Type: AWS::EC2::RouteTable
+    DependsOn: GatewayToInternet
+    Properties:
+      VpcId: !Ref 'VPC'
+      Tags:
+        - Key: CFN Stack
+          Value: !Ref 'AWS::StackName'
+        - Key: Name
+          Value: IoT workshop
+  PublicRoute:
+    Type: AWS::EC2::Route
+    Properties:
+      RouteTableId: !Ref 'PublicRouteTable'
+      DestinationCidrBlock: '0.0.0.0/0'
+      GatewayId: !Ref 'InternetGateway'
+  PubSubnetRTAssoc:
+    Type: AWS::EC2::SubnetRouteTableAssociation
+    Properties:
+      SubnetId: !Ref 'PubSubnet'
+      RouteTableId: !Ref 'PublicRouteTable'
+  IoTWSS3Bucket:
+    Type: AWS::S3::Bucket
+  IoTWSIoTPolicy:
+    Type: AWS::IoT::Policy
+    Properties:
+      PolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Effect: Allow
+            Action:
+              - iot:*
+            Resource:
+              - '*'
+  DeviceServiceRole:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+          Statement:
+          - Effect: Allow
+            Principal:
+              Service: [credentials.iot.amazonaws.com]
+            Action: ['sts:AssumeRole']
+      Path: /
+      Policies:
+        - PolicyName: deviceS3Policy
+          PolicyDocument:
+            Statement:
+            - Effect: Allow
+              Action: ['s3:*']
+              Resource: [!Sub 'arn:aws:s3:::${IoTWSS3Bucket}',!Sub 'arn:aws:s3:::${IoTWSS3Bucket}/*']
+  IoTWSRegLambdaJITRRole:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service:
+                - lambda.amazonaws.com
+            Action:
+              - sts:AssumeRole
+      Policies:
+        - PolicyName: !Join
+            - ''
+            - - IoTWSRegLambdaJITRPolicy-
+              - !Ref 'AWS::Region'
+          PolicyDocument:
+            Version: '2012-10-17'
+            Statement:
+              - Effect: Allow
+                Action:
+                  - logs:CreateLogGroup
+                  - logs:CreateLogStream
+                  - logs:PutLogEvents
+                Resource: arn:aws:logs:*:*:*
+              - Effect: Allow
+                Action:
+                  - iot:CreateThing
+                  - iot:UpdateCertificate
+                  - iot:CreatePolicy
+                  - iot:AttachPolicy
+                  - iot:DescribeCertificate
+                  - iot:AttachThingPrincipal
+                  - iot:CreateRoleAlias
+                Resource: '*'
+      Path: /
+  IoTWSIoTServiceRole:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service:
+                - iot.amazonaws.com
+            Action:
+              - sts:AssumeRole
+      ManagedPolicyArns:
+        - arn:aws:iam::aws:policy/service-role/AWSIoTThingsRegistration
+        - arn:aws:iam::aws:policy/service-role/AWSIoTLogging
+        - arn:aws:iam::aws:policy/AmazonS3ReadOnlyAccess
+      Path: /
+  IoTWSIAMUser:
+    Type: AWS::IAM::User
+  IoTWSC9Role:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service:
+                - ec2.amazonaws.com
+            Action:
+              - sts:AssumeRole
+      Policies:
+        - PolicyName: !Join
+            - ''
+            - - IoTWSC9Policy-
+              - !Ref 'AWS::Region'
+          PolicyDocument:
+            Version: '2012-10-17'
+            Statement:
+              - Effect: Allow
+                Action:
+                  - iot:*
+                  - greengrass:*
+                  - s3:*
+                  - signer:*
+                  - iam:PassRole
+                  - lambda:CreateFunction
+                  - lambda:GetFunction
+                  - lambda:ListFunctions
+                  - lambda:DeleteFunction
+                  - lambda:AddPermission
+                  - lambda:GetPolicy
+                  - logs:FilterLogEvents
+                  - dynamodb:PutItem
+                  - dynamodb:GetItem
+                  - dynamodb:Scan
+                  - acm:ImportCertificate
+                  - acm:ListCertificates
+                  - acm:DescribeCertificate
+                  - acm:DeleteCertificate
+                  - acm:GetCertificate
+                Resource: '*'
+      ManagedPolicyArns:
+        - arn:aws:iam::aws:policy/service-role/AmazonEC2RoleforSSM
+      Path: /
+  IoTWSC9InstanceProfile:
+    Type: AWS::IAM::InstanceProfile
+    Properties:
+      Path: /
+      Roles:
+        - !Ref 'IoTWSC9Role'
+  IoTWSC9Instance:
+    Description: '-'
+    Type: AWS::Cloud9::EnvironmentEC2
+    Properties:
+      Description: AWS Cloud9 instance for IoT workshops
+      AutomaticStopTimeMinutes: 120
+      InstanceType: !Ref '01C9InstanceType'
+      Name: !Ref 'AWS::StackName'
+      SubnetId: !Ref 'PubSubnet'
+  LambdaExecutionRole:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service:
+                - lambda.amazonaws.com
+            Action:
+              - sts:AssumeRole
+      Path: /
+      Policies:
+        - PolicyName: !Join
+            - ''
+            - - IoTWSLambdaPolicy-
+              - !Ref 'AWS::Region'
+          PolicyDocument:
+            Version: '2012-10-17'
+            Statement:
+              - Effect: Allow
+                Action:
+                  - logs:CreateLogGroup
+                  - logs:CreateLogStream
+                  - logs:PutLogEvents
+                Resource: arn:aws:logs:*:*:*
+              - Effect: Allow
+                Action:
+                  - cloudformation:DescribeStackEvents
+                  - cloudformation:DescribeStackResource
+                  - cloudformation:DescribeStackResources
+                  - cloudformation:DescribeStacks
+                  - ec2:AssociateIamInstanceProfile
+                  - ec2:DescribeInstances
+                  - ec2:ModifyInstanceAttribute
+                  - ec2:ReplaceIamInstanceProfileAssociation
+                  - iam:ListInstanceProfiles
+                  - iam:PassRole
+                  - iot:DeleteCertificate
+                  - iot:DeleteThing
+                  - iot:DeletePolicy
+                  - iot:DeleteRoleAlias
+                  - iot:DetachPolicy
+                  - iot:DetachThingPrincipal
+                  - iot:ListThingPrincipals
+                  - iot:UpdateCertificate
+                  - ssm:DescribeInstanceInformation
+                  - ssm:SendCommand
+                Resource: '*'
+              - Effect: Allow
+                Action:
+                  - s3:*
+                Resource:
+                  - !GetAtt 'IoTWSS3Bucket.Arn'
+                  - !Join
+                    - ''
+                    - - !GetAtt 'IoTWSS3Bucket.Arn'
+                      - /*
+  BootstrapC9InstanceLambda:
+    Description: Bootstrap Cloud9 instance
+    Type: Custom::BootstrapC9InstanceLambda
+    DependsOn:
+      - BootstrapC9InstanceLambdaFunction
+      - IoTWSS3Bucket
+      - IoTWSRegLambdaJITRRole
+      - IoTWSIoTServiceRole
+      - IoTWSIoTPolicy
+      - IoTWSIoTServiceRole
+      - IoTWSC9Instance
+      - IoTWSC9InstanceProfile
+      - IoTWSC9SecurityGroup
+      - LambdaExecutionRole
+    Properties:
+      ServiceToken: !GetAtt 'BootstrapC9InstanceLambdaFunction.Arn'
+      REGION: !Ref 'AWS::Region'
+      StackName: !Ref 'AWS::StackName'
+      EnvironmentId: !Ref 'IoTWSC9Instance'
+      LabIdeInstanceProfileName: !Ref 'IoTWSC9InstanceProfile'
+      LabIdeInstanceProfileArn: !GetAtt 'IoTWSC9InstanceProfile.Arn'
+      S3_BUCKET: !Ref 'IoTWSS3Bucket'
+      ARN_LAMBDA_ROLE: !GetAtt 'IoTWSRegLambdaJITRRole.Arn'
+      ARN_IOT_PROVISIONING_ROLE: !GetAtt 'IoTWSIoTServiceRole.Arn'
+      ARN_DEVICE_ROLE: !GetAtt 'DeviceServiceRole.Arn'
+      IOT_POLICY: !Ref 'IoTWSIoTPolicy'
+      SecurityGroupId: !Ref 'IoTWSC9SecurityGroup'
+  BootstrapC9InstanceLambdaFunction:
+    Type: AWS::Lambda::Function
+    Properties:
+      Environment:
+        Variables:
+          C9_USER_DATA_VERSION: '20190313'
+      Code:
+        S3Bucket: !Ref 'S3Bucket4Lambda'
+        S3Key: !Ref 'S3Key4Lambda'
+      Handler: c9_bootstrap_lambda.lambda_handler
+      Role: !GetAtt 'LambdaExecutionRole.Arn'
+      Runtime: python2.7
+      MemorySize: 256
+      Timeout: '600'
+  IoTWSC9SecurityGroup:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      VpcId: !Ref 'VPC'
+      GroupDescription: Enable access to various ports
+      Tags:
+        - Key: Name
+          Value: C9 IoT workshop
+      SecurityGroupIngress:
+        - IpProtocol: tcp
+          FromPort: '8883'
+          ToPort: '8883'
+          CidrIp: '0.0.0.0/0'
+Outputs:
+  Cloud9IDE:
+    Value: !Join
+      - ''
+      - - https://
+        - !Ref 'AWS::Region'
+        - .console.aws.amazon.com/cloud9/ide/
+        - !Ref 'IoTWSC9Instance'
+        - ?region=
+        - !Ref 'AWS::Region'
+  S3Bucket:
+    Description: Name of the S3 Bucket for the IoT workshop
+    Value: !Ref 'IoTWSS3Bucket'
+  IoTPolicy:
+    Description: Name of the IoT policy for JITP
+    Value: !Ref 'IoTWSIoTPolicy'
+  ArnIoTProvRole:
+    Description: Role Arn for IoT device provisiong
+    Value: !GetAtt 'IoTWSIoTServiceRole.Arn'
+  ArnLambdaRole:
+    Description: Role Arn for the JITR Lambda function
+    Value: !GetAtt 'IoTWSRegLambdaJITRRole.Arn'
