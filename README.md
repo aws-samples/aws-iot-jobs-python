@@ -11,17 +11,20 @@ This sample code is made available under the MIT-0 license. See the LICENSE file
 <details>
   <summary>Cloud9 IDE</summary>
   
-  ### Choose a region for deployment
+### Compatible regions
   
-| Region  | Template |
-| ------------- | ------------- |
-| **ap-northeast-1** (Tokyo)  | [![Launch Stack](https://cdn.rawgit.com/buildkite/cloudformation-launch-stack-button-svg/master/launch-stack.svg)](https://console.aws.amazon.com/cloudformation/home#/stacks/new?stackName=aws-iot-jobs-python&templateURL=https://jonslo-aws-samples-ap-northeast-1.s3.amazonaws.com/aws-iot-jobs-python/aws-iot-jobs-python.yaml)  |
-| **ap-southeast-1** (Singapore)  | [![Launch Stack](https://cdn.rawgit.com/buildkite/cloudformation-launch-stack-button-svg/master/launch-stack.svg)](https://console.aws.amazon.com/cloudformation/home#/stacks/new?stackName=aws-iot-jobs-python&templateURL=https://jonslo-aws-samples-ap-southeast-1.s3.amazonaws.com/aws-iot-jobs-python/aws-iot-jobs-python.yaml)  |
-| **eu-central-1** (Frankfurt)  | [![Launch Stack](https://cdn.rawgit.com/buildkite/cloudformation-launch-stack-button-svg/master/launch-stack.svg)](https://console.aws.amazon.com/cloudformation/home#/stacks/new?stackName=aws-iot-jobs-python&templateURL=https://jonslo-aws-samples-eu-central-1.s3.amazonaws.com/aws-iot-jobs-python/aws-iot-jobs-python.yaml)  |
-| **eu-west-1** (Ireland)  | [![Launch Stack](https://cdn.rawgit.com/buildkite/cloudformation-launch-stack-button-svg/master/launch-stack.svg)](https://console.aws.amazon.com/cloudformation/home#/stacks/new?stackName=aws-iot-jobs-python&templateURL=https://jonslo-aws-samples-eu-west-1.s3.amazonaws.com/aws-iot-jobs-python/aws-iot-jobs-python.yaml)  |
-| **us-east-1** (N Virginia)  | [![Launch Stack](https://cdn.rawgit.com/buildkite/cloudformation-launch-stack-button-svg/master/launch-stack.svg)](https://console.aws.amazon.com/cloudformation/home#/stacks/new?stackName=aws-iot-jobs-python&templateURL=https://jonslo-aws-samples-us-east-1.s3.amazonaws.com/aws-iot-jobs-python/aws-iot-jobs-python.yaml)  |
-| **us-east-2** (Ohio) | [![Launch Stack](https://cdn.rawgit.com/buildkite/cloudformation-launch-stack-button-svg/master/launch-stack.svg)](https://console.aws.amazon.com/cloudformation/home#/stacks/new?stackName=aws-iot-jobs-python&templateURL=https://jonslo-aws-samples-us-east-2.s3.amazonaws.com/aws-iot-jobs-python/aws-iot-jobs-python.yaml)  |
-| **us-west-2** (Oregon)  | [![Launch Stack](https://cdn.rawgit.com/buildkite/cloudformation-launch-stack-button-svg/master/launch-stack.svg)](https://console.aws.amazon.com/cloudformation/home#/stacks/new?stackName=aws-iot-jobs-python&templateURL=https://jonslo-aws-samples-us-west-2.s3.amazonaws.com/aws-iot-jobs-python/aws-iot-jobs-python.yaml)  |
+* **ap-northeast-1** (Tokyo)
+* **ap-southeast-1** (Singapore)
+* **eu-central-1** (Frankfurt)
+* **eu-west-1** (Ireland)
+* **us-east-1** (N Virginia)
+* **us-east-2** (Ohio)
+* **us-west-2** (Oregon)
+
+### Download zip and template
+
+* ![Download Lambda zip package](https://github.com/aws-samples/aws-iot-jobs-python/raw/master/c9_bootstrap_lambda/c9_bootstrap_lambda.zip)
+* <a href="https://raw.githubusercontent.com/aws-samples/aws-iot-jobs-python/master/aws-iot-jobs-python.yaml" download>Download CloudFormation template</a>
 
 ### Configure and launch stack
 
