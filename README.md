@@ -33,9 +33,17 @@ This sample code is made available under the MIT-0 license. See the LICENSE file
 
 ### Configure and launch stack
 
-* Upload the aws-iot-jobs-python.yaml template to CloudFormation, and supply the S3 bucket/key parameters using values from the previous step.
+* Upload the aws-iot-jobs-python.yaml template to CloudFormation.
 
-![](https://media.giphy.com/media/WSr73iUNou0yx5ZdXU/giphy.gif)
+![](https://media.giphy.com/media/LS2YPXw6WunFBC1pCb/giphy.gif)
+
+* Supply the S3 bucket and S3 key parameters using values from the previous step, as well as the preferred instance type.
+
+![](https://media.giphy.com/media/dUIGyYSuKHV9WQTbCG/giphy.gif)
+
+* Step through remaining configuration, acknowledge creation of IAM resources, and launch stack!
+
+![](https://media.giphy.com/media/cMVG47Phkq5ImdRnGF/giphy.gif)
 
 ### Launch Cloud9 IDE
 
